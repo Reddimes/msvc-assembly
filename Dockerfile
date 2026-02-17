@@ -1,7 +1,8 @@
 FROM ubuntu:22.04
 
+RUN dpkg --add-architecture i386
 RUN apt-get update && \
-    apt-get install -y wine64 python3 msitools ca-certificates && \
+    apt-get install -y wine python3 msitools ca-certificates unzip && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
@@ -20,8 +21,15 @@ RUN PYTHONUNBUFFERED=1 ./vsdownload.py --accept-license --dest /opt/msvc && \
     rm lowercase fixinclude install.sh vsdownload.py && \
     rm -rf wrappers
 
+ADD https://github.com/surferkip/asmbook/raw/refs/heads/main/Irvine.zip ./
+RUN unzip ./Irvine.zip
+RUN rm ./Irvine.zip
+ENV WINEDEBUG=-all
+COPY build.sh /opt/msvc
+
 COPY msvcenv-native.sh /opt/msvc
 
+ENTRYPOINT ["/opt/msvc/build.sh"]
 # Later stages which actually uses MSVC can ideally start a persistent
 # wine server like this:
 #RUN wineserver -p && \
