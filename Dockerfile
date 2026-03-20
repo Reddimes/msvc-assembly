@@ -21,6 +21,9 @@ RUN PYTHONUNBUFFERED=1 ./vsdownload.py --accept-license --dest /opt/msvc && \
     rm lowercase fixinclude install.sh vsdownload.py && \
     rm -rf wrappers
 
+ADD http://archive.ubuntu.com/ubuntu/pool/universe/o/objconv/objconv_2.54+ds-1_amd64.deb ./
+RUN apt-get install ./objconv_2.54+ds-1_amd64.deb
+
 ADD https://github.com/surferkip/asmbook/raw/refs/heads/main/Irvine.zip ./
 RUN unzip ./Irvine.zip
 RUN rm ./Irvine.zip
@@ -29,7 +32,7 @@ COPY build.sh /opt/msvc
 
 COPY msvcenv-native.sh /opt/msvc
 
-ENTRYPOINT ["/opt/msvc/build.sh"]
+# ENTRYPOINT ["/opt/msvc/build.sh"]
 # Later stages which actually uses MSVC can ideally start a persistent
 # wine server like this:
 #RUN wineserver -p && \
